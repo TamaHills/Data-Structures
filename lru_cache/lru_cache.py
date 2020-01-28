@@ -1,4 +1,3 @@
-import sys
 from doubly_linked_list import DoublyLinkedList
 
 
@@ -26,7 +25,7 @@ class LRUCache:
         value = None
         node = self.dict.get(key)
         if node:
-            value = node.value
+            key, value = node.value
             self.cache.move_to_front(node)
         return value
 
@@ -43,13 +42,13 @@ class LRUCache:
     def set(self, key, value):
         curr_node = self.dict.get(key)
         if curr_node:
-            curr_node.value = value
+            curr_node.value = (key, value)
             self.cache.move_to_front(curr_node)
         else:
-            self.cache.add_to_head(key, value)
+            self.cache.add_to_head((key, value))
             self.dict[key] = self.cache.head
         
         if len(self.cache) > self.limit:
-            expr_key = self.cache.tail.key
+            expr_key, value = self.cache.tail.value
             self.cache.remove_from_tail()
             self.dict[expr_key] = None
