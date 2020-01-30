@@ -12,7 +12,8 @@ class LRUCache:
     def __init__(self, limit=10):
         self.limit = limit
         self.cache = DoublyLinkedList()
-        self.dict = dict()
+        self.size = 0
+        self.store = dict()
 
     """
     Retrieves the value associated with the given key. Also
@@ -23,8 +24,11 @@ class LRUCache:
     """
     def get(self, key):
         value = None
-        node = self.dict.get(key)
+        # retrieve refernce to node from store
+        node = self.store.get(key)
         if node:
+            # unpack key, value pair
+            # move node to head of cache
             key, value = node.value
             self.cache.move_to_front(node)
         return value
@@ -40,15 +44,24 @@ class LRUCache:
     the newly-specified value.
     """
     def set(self, key, value):
-        curr_node = self.dict.get(key)
-        if curr_node:
-            curr_node.value = (key, value)
-            self.cache.move_to_front(curr_node)
-        else:
-            self.cache.add_to_head((key, value))
-            self.dict[key] = self.cache.head
+        # retrieve reference to node if exists
+        node = self.store.get(key)
+
+        # check if node reference exists
+        if node:
+            # delete existing node from cache
+            self.cache.delete(node)
         
+        # add key, value pair to cache
+        # save refrence into the store
+        self.cache.add_to_head((key, value))
+        self.store[key] = self.cache.head
+        
+        # if new cache length is greater than limit
         if len(self.cache) > self.limit:
+            # unpack key, value pair from tail
             expr_key, value = self.cache.tail.value
+            # remove tail node 
+            # overwrite store value to None
             self.cache.remove_from_tail()
-            self.dict[expr_key] = None
+            del self.store[expr_key]

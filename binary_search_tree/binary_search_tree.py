@@ -1,8 +1,7 @@
 import sys
 sys.path.append('./queue_and_stack')
-from dll_queue import Queue
 from dll_stack import Stack
-
+from dll_queue import Queue
 
 class BinarySearchTree:
     def __init__(self, value):
@@ -12,38 +11,117 @@ class BinarySearchTree:
 
     # Insert the given value into the tree
     def insert(self, value):
-        pass
+        if value >= self.value:
+            if self.right:
+                self.right.insert(value)
+            else:
+                self.right = BinarySearchTree(value)
+        elif value < self.value:
+            if self.left:
+                self.left.insert(value)
+            else:
+                self.left = BinarySearchTree(value)
 
     # Return True if the tree contains the value
     # False if it does not
     def contains(self, target):
-        pass
+        if target > self.value:
+            if self.right:
+                return self.right.contains(target)
+            else:
+                return False
+        elif target < self.value:
+            if self.left:
+                return self.left.contains(target)
+            else:
+                return False
+        else:
+            return True
 
     # Return the maximum value found in the tree
+
     def get_max(self):
-        pass
+        if self.right:
+            return self.right.get_max()
+        return self.value
 
     # Call the function `cb` on the value of each node
     # You may use a recursive or iterative approach
     def for_each(self, cb):
-        pass
+        cb(self.value)
+        if self.left:
+            self.left.for_each(cb)
+        if self.right:
+            self.right.for_each(cb)
+
+    def delete(self, value):
+        if self.contains(value) is True:
+            if value == self.value:
+                if self.left:
+                    left_node = self.left
+                    max_value = left_node.get_max()
+                    self.value = max_value
+                    left_node.delete(max_value)
+                elif self.right:
+                    right_node = self.right
+                    self.value = right_node.value
+                    right_node.delete(right_node.value)
+                else:
+                    return True
+            elif value > self.value:
+                delete = self.right.delete(value)
+                if delete:
+                    self.right = None
+            else:
+                delete = self.left.delete(value)
+                if delete:
+                    self.left = None
 
     # DAY 2 Project -----------------------
 
     # Print all the values in order from low to high
     # Hint:  Use a recursive, depth first traversal
     def in_order_print(self, node):
-        pass
+        if self.left:
+            self.left.in_order_print(self.left)
+        
+        print(self.value)
 
+        if self.right:
+            self.right.in_order_print(self.right)
+    
     # Print the value of every node, starting with the given node,
-    # in an iterative breadth first traversal
+    # in an iterative breadth first traversal      
+
     def bft_print(self, node):
-        pass
+        queue = Queue()
+
+        queue.enqueue(node)
+        while queue.size > 0:
+            temp = queue.dequeue()
+            print(temp.value)
+            if temp.left:
+                queue.enqueue(temp.left)
+            if temp.right:
+                queue.enqueue(temp.right)
+
+
+
+
 
     # Print the value of every node, starting with the given node,
     # in an iterative depth first traversal
     def dft_print(self, node):
-        pass
+        stack = Stack()
+
+        stack.push(node)
+        while stack.size > 0:
+            temp = stack.pop()
+            print(temp.value)
+            if temp.left:
+                stack.push(temp.left)
+            if temp.right:
+                stack.push(temp.right)
 
     # STRETCH Goals -------------------------
     # Note: Research may be required
